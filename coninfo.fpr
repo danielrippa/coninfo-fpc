@@ -1,0 +1,40 @@
+program coninfo;
+
+{$mode delphi}
+
+uses
+  Windows, SysUtils;
+
+  function NewScreenBufferHandle: THandle;
+  begin
+    Result := CreateFile('CONOUT$', GENERIC_READ or GENERIC_WRITE, FILE_SHARE_READ or FILE_SHARE_WRITE, Nil, OPEN_EXISTING, 0, 0);
+  end;
+
+var
+  info: _CONSOLE_SCREEN_BUFFER_INFO;
+  ConsoleHandle: THandle;
+begin
+
+  ConsoleHandle := NewScreenBufferHandle;
+
+  if GetConsoleScreenBufferInfo(ConsoleHandle, &info) then begin
+
+    with info.dwSize do begin
+      WriteLn('ScreenBuffer');
+      WriteLn(Format('Height: %d', [X]));
+      Writeln(Format('Width: %d', [Y]));
+    end;
+
+    WriteLn;
+
+    with info.srWindow do begin
+      WriteLn('Window');
+      Writeln(Format('Height: %d', [Bottom - Top + 1]));
+      Writeln(Format('Width: %d', [Right - Left + 1]));
+    end;
+
+    CloseHandle(ConsoleHandle);
+
+  end;
+
+end.
